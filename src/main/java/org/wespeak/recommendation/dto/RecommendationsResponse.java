@@ -5,4 +5,5 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record RecommendationsResponse(List<RecommendationItemDto> recommendations, Instant generatedAt) {}
+public record RecommendationsResponse(
+    List<RecommendationItemDto> recommendations, Instant generatedAt) {}

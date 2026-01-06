@@ -31,11 +31,12 @@ public class RecommendationEngineService {
   private final ConversationServiceClient conversationServiceClient;
 
   public List<Recommendation> generateNextLesson(
-      String userId,
-      String language,
-      LearningHistory history) {
-    LessonServiceClient.ProgressResponse progress = lessonServiceClient.getProgress(userId, language);
-    if (progress == null || progress.nextLesson() == null || !progress.nextLesson().prerequisitesMet()) {
+      String userId, String language, LearningHistory history) {
+    LessonServiceClient.ProgressResponse progress =
+        lessonServiceClient.getProgress(userId, language);
+    if (progress == null
+        || progress.nextLesson() == null
+        || !progress.nextLesson().prerequisitesMet()) {
       return List.of();
     }
     LessonServiceClient.Lesson lesson = progress.nextLesson();
@@ -47,7 +48,10 @@ public class RecommendationEngineService {
             .targetId(lesson.id())
             .targetType(Recommendation.TargetType.lesson)
             .title(lesson.title())
-            .reason(progress.unitUnlocked() ? "Nouvelle unité débloquée" : "Continuez votre progression")
+            .reason(
+                progress.unitUnlocked()
+                    ? "Nouvelle unité débloquée"
+                    : "Continuez votre progression")
             .priority(1)
             .metadata(
                 Map.of(
@@ -59,9 +63,7 @@ public class RecommendationEngineService {
   }
 
   public List<Recommendation> generateRevision(
-      String userId,
-      String language,
-      LearningHistory history) {
+      String userId, String language, LearningHistory history) {
     List<Recommendation> recs = new ArrayList<>();
     if (history.getWeakAreas() == null) return recs;
     List<LearningHistory.WeakArea> sorted =
@@ -72,7 +74,8 @@ public class RecommendationEngineService {
             .toList();
     for (LearningHistory.WeakArea area : sorted) {
       LessonServiceClient.RevisionExercise exercise =
-          lessonServiceClient.findRevisionExercise(language, area.getCategory(), area.getSubcategory());
+          lessonServiceClient.findRevisionExercise(
+              language, area.getCategory(), area.getSubcategory());
       if (exercise == null) {
         continue;
       }
@@ -113,7 +116,12 @@ public class RecommendationEngineService {
             slot ->
                 preferredTimes.isEmpty()
                     || preferredTimes.stream()
-                        .anyMatch(pref -> slot.startTime().toString().toLowerCase().contains(pref.toLowerCase())))
+                        .anyMatch(
+                            pref ->
+                                slot.startTime()
+                                    .toString()
+                                    .toLowerCase()
+                                    .contains(pref.toLowerCase())))
         .sorted(Comparator.comparing(ConversationServiceClient.ConversationSlot::startTime))
         .limit(2)
         .forEach(
@@ -145,7 +153,10 @@ public class RecommendationEngineService {
 
   public List<Recommendation> keepTop(List<Recommendation> list) {
     return list.stream()
-        .sorted(Comparator.comparing(Recommendation::getPriority).thenComparing(Recommendation::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+        .sorted(
+            Comparator.comparing(Recommendation::getPriority)
+                .thenComparing(
+                    Recommendation::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
         .limit(MAX_RECOMMENDATIONS)
         .toList();
   }

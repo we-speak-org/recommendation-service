@@ -24,7 +24,8 @@ public class EventListeners {
     return event -> {
       log.info("Received lesson.completed {}", event.getId());
       learningHistoryService.onLessonCompleted(event.getData());
-      recommendationFacade.recomputeForUser(event.getData().userId(), event.getData().targetLanguageCode());
+      recommendationFacade.recomputeForUser(
+          event.getData().userId(), event.getData().targetLanguageCode());
     };
   }
 
@@ -33,7 +34,8 @@ public class EventListeners {
     return event -> {
       log.info("Received feedback.generated {}", event.getId());
       learningHistoryService.onFeedbackGenerated(event.getData());
-      recommendationFacade.recomputeForUser(event.getData().userId(), event.getData().targetLanguageCode());
+      recommendationFacade.recomputeForUser(
+          event.getData().userId(), event.getData().targetLanguageCode());
     };
   }
 
@@ -42,12 +44,15 @@ public class EventListeners {
     return event -> {
       log.info("Received user.profile.updated {}", event.getId());
       learningHistoryService.onUserProfileUpdated(event.getData());
-      recommendationFacade.recomputeForUser(event.getData().userId(), targetLanguage(event.getData()));
+      recommendationFacade.recomputeForUser(
+          event.getData().userId(), targetLanguage(event.getData()));
     };
   }
 
   private String targetLanguage(UserProfileUpdatedPayload payload) {
-    if (payload.changes() != null && payload.changes().learningProfiles() != null && !payload.changes().learningProfiles().isEmpty()) {
+    if (payload.changes() != null
+        && payload.changes().learningProfiles() != null
+        && !payload.changes().learningProfiles().isEmpty()) {
       return payload.changes().learningProfiles().getFirst().targetLanguageCode();
     }
     return null;

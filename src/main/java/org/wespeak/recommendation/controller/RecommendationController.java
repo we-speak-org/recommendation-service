@@ -1,11 +1,9 @@
 package org.wespeak.recommendation.controller;
 
 import jakarta.validation.Valid;
-import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +33,8 @@ public class RecommendationController {
       @RequestParam(name = "type", required = false) String type,
       Authentication authentication) {
     String userId = UserContext.userId(authentication);
-    return ResponseEntity.ok(recommendationFacade.getRecommendations(userId, language, limit, type));
+    return ResponseEntity.ok(
+        recommendationFacade.getRecommendations(userId, language, limit, type));
   }
 
   @PostMapping("/{recommendationId}/click")

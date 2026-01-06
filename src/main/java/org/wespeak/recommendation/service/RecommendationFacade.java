@@ -3,7 +3,6 @@ package org.wespeak.recommendation.service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,15 +40,14 @@ public class RecommendationFacade {
     // purge expired
     List<Recommendation> existing = recommendationRepository.findActive(userId, language, now);
     List<Recommendation> filtered =
-        existing.stream()
-            .filter(r -> type == null || r.getType().name().equals(type))
-            .toList();
+        existing.stream().filter(r -> type == null || r.getType().name().equals(type)).toList();
     if (filtered.size() >= limit) {
       return response(filtered, now);
     }
 
     LearningHistory history = learningHistoryService.getOrCreate(userId, language);
-    UserPreferences prefs = userPreferencesRepository.findByUserIdAndTargetLanguageCode(userId, language).orElse(null);
+    UserPreferences prefs =
+        userPreferencesRepository.findByUserIdAndTargetLanguageCode(userId, language).orElse(null);
 
     List<Recommendation> generated = new ArrayList<>(existing);
     if (type == null || type.equals("next_lesson")) {
@@ -60,8 +58,7 @@ public class RecommendationFacade {
     }
     if (type == null || type.equals("conversation")) {
       generated.addAll(
-          recommendationEngineService.generateConversation(
-              userId, language, null, prefs));
+          recommendationEngineService.generateConversation(userId, language, null, prefs));
     }
 
     List<Recommendation> saved =
@@ -100,7 +97,14 @@ public class RecommendationFacade {
     return userPreferencesRepository
         .findByUserIdAndTargetLanguageCode(userId, language)
         .map(this::toDto)
-        .orElseGet(() -> toDto(UserPreferences.builder().userId(userId).targetLanguageCode(language).dailyGoalMinutes(15).build()));
+        .orElseGet(
+            () ->
+                toDto(
+                    UserPreferences.builder()
+                        .userId(userId)
+                        .targetLanguageCode(language)
+                        .dailyGoalMinutes(15)
+                        .build()));
   }
 
   @Transactional
@@ -142,7 +146,8 @@ public class RecommendationFacade {
             LearningHistoryDto.Summary.builder()
                 .totalLessons(Optional.ofNullable(history.getTotalLessons()).orElse(0))
                 .averageScore(Optional.ofNullable(history.getAverageScore()).orElse(0.0))
-                .totalConversationMinutes(Optional.ofNullable(history.getTotalConversationMinutes()).orElse(0))
+                .totalConversationMinutes(
+                    Optional.ofNullable(history.getTotalConversationMinutes()).orElse(0))
                 .build())
         .weakAreas(
             history.getWeakAreas() == null
@@ -169,7 +174,12 @@ public class RecommendationFacade {
                                 .successRate(s.getSuccessRate())
                                 .build())
                     .toList())
-        .recentProgress(LearningHistoryDto.RecentProgress.builder().lessonsLastWeek(0).xpLastWeek(0).streak(0).build())
+        .recentProgress(
+            LearningHistoryDto.RecentProgress.builder()
+                .lessonsLastWeek(0)
+                .xpLastWeek(0)
+                .streak(0)
+                .build())
         .build();
   }
 
@@ -179,9 +189,11 @@ public class RecommendationFacade {
   }
 
   private RecommendationsResponse response(List<Recommendation> recs, Instant generatedAt) {
-    List<RecommendationItemDto> items =
-        recs.stream().map(this::toDto).toList();
-    return RecommendationsResponse.builder().recommendations(items).generatedAt(generatedAt).build();
+    List<RecommendationItemDto> items = recs.stream().map(this::toDto).toList();
+    return RecommendationsResponse.builder()
+        .recommendations(items)
+        .generatedAt(generatedAt)
+        .build();
   }
 
   private RecommendationItemDto toDto(Recommendation rec) {

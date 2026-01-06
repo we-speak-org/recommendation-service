@@ -14,10 +14,12 @@ public record LearningHistoryDto(
     RecentProgress recentProgress) {
 
   @Builder
-  public record Summary(Integer totalLessons, Double averageScore, Integer totalConversationMinutes) {}
+  public record Summary(
+      Integer totalLessons, Double averageScore, Integer totalConversationMinutes) {}
 
   @Builder
-  public record WeakAreaDto(String category, String subcategory, Integer errorCount, Instant lastErrorAt) {}
+  public record WeakAreaDto(
+      String category, String subcategory, Integer errorCount, Instant lastErrorAt) {}
 
   @Builder
   public record StrongAreaDto(String category, String subcategory, Integer successRate) {}

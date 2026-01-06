@@ -42,10 +42,12 @@ public class LearningHistoryService {
   }
 
   public void onLessonCompleted(LessonCompletedPayload payload) {
-    LearningHistory history =
-        getOrCreate(payload.userId(), payload.targetLanguageCode());
+    LearningHistory history = getOrCreate(payload.userId(), payload.targetLanguageCode());
 
-    List<String> completed = history.getCompletedLessonIds() == null ? new ArrayList<>() : history.getCompletedLessonIds();
+    List<String> completed =
+        history.getCompletedLessonIds() == null
+            ? new ArrayList<>()
+            : history.getCompletedLessonIds();
     if (!completed.contains(payload.lessonId())) {
       completed.add(payload.lessonId());
       history.setCompletedLessonIds(completed);
@@ -60,10 +62,11 @@ public class LearningHistoryService {
   }
 
   public void onFeedbackGenerated(FeedbackGeneratedPayload payload) {
-    LearningHistory history =
-        getOrCreate(payload.userId(), payload.targetLanguageCode());
+    LearningHistory history = getOrCreate(payload.userId(), payload.targetLanguageCode());
     List<LearningHistory.WeakArea> weakAreas =
-        history.getWeakAreas() == null ? new ArrayList<>() : new ArrayList<>(history.getWeakAreas());
+        history.getWeakAreas() == null
+            ? new ArrayList<>()
+            : new ArrayList<>(history.getWeakAreas());
 
     if (payload.analysis() != null && payload.analysis().errors() != null) {
       payload
@@ -97,7 +100,9 @@ public class LearningHistoryService {
 
     if (payload.analysis() != null && payload.analysis().strengths() != null) {
       List<LearningHistory.StrongArea> strongAreas =
-          history.getStrongAreas() == null ? new ArrayList<>() : new ArrayList<>(history.getStrongAreas());
+          history.getStrongAreas() == null
+              ? new ArrayList<>()
+              : new ArrayList<>(history.getStrongAreas());
       payload
           .analysis()
           .strengths()

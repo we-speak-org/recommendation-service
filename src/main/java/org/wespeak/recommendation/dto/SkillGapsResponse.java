@@ -20,7 +20,8 @@ public record SkillGapsResponse(
       List<RecommendedActionDto> recommendedActions) {}
 
   @Builder
-  public record GapEvidenceDto(Integer errorCount, String lastError, Integer relatedLessonsNotCompleted) {}
+  public record GapEvidenceDto(
+      Integer errorCount, String lastError, Integer relatedLessonsNotCompleted) {}
 
   @Builder
   public record RecommendedActionDto(String type, String itemId, String titleKey) {}
@@ -29,5 +30,9 @@ public record SkillGapsResponse(
   public record StrengthAreaDto(String skillCode, Integer masteryLevel, String lastPracticed) {}
 
   @Builder
-  public record SummaryDto(Integer totalGaps, Integer highPriorityGaps, Integer strengthsCount, Double overallReadiness) {}
+  public record SummaryDto(
+      Integer totalGaps,
+      Integer highPriorityGaps,
+      Integer strengthsCount,
+      Double overallReadiness) {}
 }

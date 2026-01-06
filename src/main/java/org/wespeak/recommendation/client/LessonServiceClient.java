@@ -1,6 +1,5 @@
 package org.wespeak.recommendation.client;
 
-import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,8 @@ public class LessonServiceClient {
     }
   }
 
-  public RevisionExercise findRevisionExercise(String language, String category, String subcategory) {
+  public RevisionExercise findRevisionExercise(
+      String language, String category, String subcategory) {
     String url =
         "%s/api/v1/lessons/revision?language=%s&category=%s&subcategory=%s"
             .formatted(baseUrl, language, category, subcategory);
@@ -56,7 +56,11 @@ public class LessonServiceClient {
       boolean unitUnlocked) {}
 
   public record Lesson(
-      String id, String title, String unitName, Integer estimatedMinutes, boolean prerequisitesMet) {}
+      String id,
+      String title,
+      String unitName,
+      Integer estimatedMinutes,
+      boolean prerequisitesMet) {}
 
   public record RevisionExercise(String id, String title, Integer estimatedMinutes) {}
 }

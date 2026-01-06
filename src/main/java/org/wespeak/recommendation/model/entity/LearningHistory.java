@@ -15,7 +15,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "learning_history")
-@CompoundIndex(name = "user_lang_unique", def = "{'userId':1,'targetLanguageCode':1}", unique = true)
+@CompoundIndex(
+    name = "user_lang_unique",
+    def = "{'userId':1,'targetLanguageCode':1}",
+    unique = true)
 public class LearningHistory {
   @Id private String id;
   private String userId;

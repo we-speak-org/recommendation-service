@@ -16,7 +16,8 @@ public class RecommendationEventPublisher {
 
   private final StreamBridge streamBridge;
 
-  public void publishGenerated(String userId, String targetLanguageCode, List<Recommendation> recs) {
+  public void publishGenerated(
+      String userId, String targetLanguageCode, List<Recommendation> recs) {
     if (recs == null || recs.isEmpty()) {
       return;
     }
@@ -28,7 +29,11 @@ public class RecommendationEventPublisher {
                 .map(
                     r ->
                         new RecommendationGeneratedPayload.RecommendationItem(
-                            r.getId(), r.getType().name(), r.getTargetId(), r.getTitle(), r.getPriority()))
+                            r.getId(),
+                            r.getType().name(),
+                            r.getTargetId(),
+                            r.getTitle(),
+                            r.getPriority()))
                 .toList(),
             recs.size());
 
@@ -71,7 +76,8 @@ public class RecommendationEventPublisher {
       String targetLanguageCode,
       List<RecommendationItem> recommendations,
       int count) {
-    public record RecommendationItem(String id, String type, String targetId, String title, Integer priority) {}
+    public record RecommendationItem(
+        String id, String type, String targetId, String title, Integer priority) {}
   }
 
   public record RecommendationClickedPayload(

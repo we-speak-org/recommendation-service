@@ -27,7 +27,8 @@ public class GlobalExceptionHandler {
     return build(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);
   }
 
-  private ResponseEntity<ErrorResponse> build(HttpStatus status, String message, HttpServletRequest req) {
+  private ResponseEntity<ErrorResponse> build(
+      HttpStatus status, String message, HttpServletRequest req) {
     ErrorResponse body =
         ErrorResponse.builder()
             .timestamp(java.time.Instant.now())
