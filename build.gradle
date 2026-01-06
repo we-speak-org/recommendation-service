@@ -44,13 +44,6 @@ dependencies {
     // MongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     
-    // Redis Cache
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
-    
-    // Caffeine Local Cache
-    implementation 'com.github.ben-manes.caffeine:caffeine'
-    
     // Spring Cloud Stream with Kafka
     implementation 'org.springframework.cloud:spring-cloud-stream'
     implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
