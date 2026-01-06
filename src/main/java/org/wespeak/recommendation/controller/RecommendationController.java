@@ -1,58 +1,77 @@
 package org.wespeak.recommendation.controller;
 
 import jakarta.validation.Valid;
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.wespeak.recommendation.dto.FeedbackRequest;
-import org.wespeak.recommendation.service.RecommendationService;
+import org.wespeak.recommendation.dto.LearningHistoryDto;
+import org.wespeak.recommendation.dto.RecommendationsResponse;
+import org.wespeak.recommendation.dto.UpdatePreferencesRequest;
+import org.wespeak.recommendation.dto.UserPreferencesDto;
+import org.wespeak.recommendation.service.RecommendationFacade;
+import org.wespeak.recommendation.util.UserContext;
 
 @RestController
-@RequestMapping("/api/recommendations")
+@RequestMapping("/api/v1/recommendations")
 @RequiredArgsConstructor
 public class RecommendationController {
 
-  private final RecommendationService recommendationService;
+  private final RecommendationFacade recommendationFacade;
 
-  @GetMapping("/next-lesson")
-  public ResponseEntity<?> getNextLesson(
-      @RequestParam String targetLanguageCode, @RequestParam(required = false) String context) {
-    return ResponseEntity.ok(
-        recommendationService.getNextLesson(targetLanguageCode, context == null ? "" : context));
+  @GetMapping
+  public ResponseEntity<RecommendationsResponse> getRecommendations(
+      @RequestParam String language,
+      @RequestParam(name = "limit", defaultValue = "5") Integer limit,
+      @RequestParam(name = "type", required = false) String type,
+      Authentication authentication) {
+    String userId = UserContext.userId(authentication);
+    return ResponseEntity.ok(recommendationFacade.getRecommendations(userId, language, limit, type));
   }
 
-  @GetMapping("/lessons")
-  public ResponseEntity<?> getRecommendedLessons(@RequestParam String targetLanguageCode) {
-    return ResponseEntity.ok(recommendationService.getRecommendedLessons(targetLanguageCode));
+  @PostMapping("/{recommendationId}/click")
+  public ResponseEntity<?> click(
+      @PathVariable String recommendationId, Authentication authentication) {
+    String userId = UserContext.userId(authentication);
+    return ResponseEntity.ok(recommendationFacade.click(userId, recommendationId));
   }
 
-  @GetMapping("/conversation-topics")
-  public ResponseEntity<?> getConversationTopics(@RequestParam String targetLanguageCode) {
-    return ResponseEntity.ok(recommendationService.getConversationTopics(targetLanguageCode));
+  @PostMapping("/{recommendationId}/dismiss")
+  public ResponseEntity<?> dismiss(
+      @PathVariable String recommendationId, Authentication authentication) {
+    String userId = UserContext.userId(authentication);
+    return ResponseEntity.ok(recommendationFacade.dismiss(userId, recommendationId));
   }
 
-  @GetMapping("/next-action")
-  public ResponseEntity<?> getNextAction(@RequestParam String targetLanguageCode) {
-    return ResponseEntity.ok(recommendationService.getNextAction(targetLanguageCode));
+  @GetMapping("/preferences")
+  public ResponseEntity<UserPreferencesDto> getPreferences(
+      @RequestParam String language, Authentication authentication) {
+    String userId = UserContext.userId(authentication);
+    return ResponseEntity.ok(recommendationFacade.getPreferences(userId, language));
   }
 
-  @GetMapping("/learning-path")
-  public ResponseEntity<?> getLearningPath(@RequestParam String targetLanguageCode) {
-    return ResponseEntity.ok(recommendationService.getLearningPath(targetLanguageCode));
+  @PutMapping("/preferences")
+  public ResponseEntity<UserPreferencesDto> updatePreferences(
+      @RequestParam String language,
+      @Valid @RequestBody UpdatePreferencesRequest request,
+      Authentication authentication) {
+    String userId = UserContext.userId(authentication);
+    return ResponseEntity.ok(recommendationFacade.updatePreferences(userId, language, request));
   }
 
-  @GetMapping("/skill-gaps")
-  public ResponseEntity<?> getSkillGaps(@RequestParam String targetLanguageCode) {
-    return ResponseEntity.ok(recommendationService.getSkillGaps(targetLanguageCode));
-  }
-
-  @PostMapping("/feedback")
-  public ResponseEntity<?> recordFeedback(@Valid @RequestBody FeedbackRequest request) {
-    return ResponseEntity.ok(recommendationService.recordFeedback(request));
+  @GetMapping("/learning-history")
+  public ResponseEntity<LearningHistoryDto> getLearningHistory(
+      @RequestParam String language, Authentication authentication) {
+    String userId = UserContext.userId(authentication);
+    return ResponseEntity.ok(recommendationFacade.getLearningHistory(userId, language));
   }
 }
